@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yearly Progress Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #22c55e;
+            --bg-color: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            margin: 0 0 8px 0;
+        }
+
+        .stats {
+            font-weight: 400;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .stats span {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .progress-container {
+            width: 240px;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            margin: 15px auto 0;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: var(--primary-green);
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        .grid {
+            display: grid;
+            /* Slightly larger boxes to accommodate text + checkmark */
+            grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+            gap: 8px;
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        .day {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: #ffffff;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        /* Checked Days */
+        .day.checked {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+            color: rgba(255, 255, 255, 0.9); /* Subtle white for the number */
+        }
+
+        /* Checkmark icon positioned slightly offset */
+        .day.checked::before {
+            content: '✓';
+            font-size: 12px;
+            font-weight: 900;
+            color: white;
+            margin-bottom: -2px;
+        }
+
+        /* Today's Highlight */
+        .day.today {
+            box-shadow: 0 0 0 2px var(--bg-color), 0 0 0 4px var(--primary-green);
+            z-index: 1;
+            transform: scale(1.05);
+            font-weight: 700;
+        }
+
+        .day:hover {
+            transform: translateY(-2px);
+            border-color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Yearly Progress</h1>
+        <div class="stats" id="counter-text">Day <span>0</span> / 365</div>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+    </header>
+
+    <div class="grid" id="calendar-grid"></div>
+
+    <script>
+        function getDayOfYear() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 0);
+            const diff = (now - start) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+
+        const grid = document.getElementById('calendar-grid');
+        const counterText = document.querySelector('#counter-text span');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const currentDay = getDayOfYear();
+        const totalDays = 365;
+
+        counterText.innerText = currentDay;
+        const percent = (currentDay / totalDays) * 100;
+        progressBar.style.width = percent + '%';
+
+        for (let i = 1; i <= totalDays; i++) {
+            const daySquare = document.createElement('div');
+            daySquare.classList.add('day');
+            
+            // Put the number inside the div
+            daySquare.innerText = i;
+            
+            if (i <= currentDay) {
+                daySquare.classList.add('checked');
+                if (i === currentDay) {
+                    daySquare.classList.add('today');
+                }
+            }
+
+            grid.appendChild(daySquare);
+        }
+    </script>
+</body>
+</html>
